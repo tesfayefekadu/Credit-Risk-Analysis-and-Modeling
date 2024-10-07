@@ -1,4 +1,2 @@
 data
 .venv
-scripts/feature_engineering.py
-notebooks/feature_engineering.ipynb
