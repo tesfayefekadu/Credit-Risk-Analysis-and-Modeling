@@ -44,22 +44,30 @@ def perform_woe_binning(data):
     woe_encoder = WOE()
     woe_features = ['Recency', 'Frequency', 'Monetary', 'Severity']
 
-    # Inspect unique values in each feature
+    # Inspect unique values in each feature to catch any non-numeric values
     for feature in woe_features:
         print(f"Unique values in {feature}: {data[feature].unique()}")
 
-    # Ensure the data types are correct
+    # Convert all relevant features to numeric, forcing errors to NaN
     for feature in woe_features:
-        # Convert to numeric, forcing errors to NaN
         data[feature] = pd.to_numeric(data[feature], errors='coerce')
 
-    
+    # Check for missing values after conversion and handle them (e.g., fill NaN or drop rows)
+    print("Missing values after conversion:")
+    print(data[woe_features].isnull().sum())
+
+    # You can choose to either fill NaN values or drop rows with NaNs
+    # data = data.dropna(subset=woe_features)  # Option to drop rows with NaNs
+    data = data.fillna(0)  # Option to fill NaNs with 0, or other strategies like mean or median
+
     # Apply WoE binning based on Risk_Label
     woe_encoder.fit(data[woe_features], data['Risk_Label'])
 
-    # Transform data
-    data_woe = woe_encoder.transform(data[woe_features])   
+    # Transform data using WoE encoder
+    data_woe = woe_encoder.transform(data[woe_features])
+
     return data_woe, woe_encoder.woe_df_
+
 
 
 
